@@ -26,16 +26,27 @@ public extension View {
   }
 }
 
-struct RoundedCorner: Shape {
-  @inlinable
-  init(
-    radius: CGFloat,
-    corners: UIRectCorner
-  ) {
-    // FIXME: Implement me
-  }
+public struct RoundedCorner: Shape {
+    @usableFromInline
+    let corners: UIRectCorner
+    @usableFromInline
+    let radius: CGFloat
 
-  // FIXME: Implement me
+    @inlinable
+    public init(
+        radius: CGFloat,
+        corners: UIRectCorner
+    ) {
+        self.corners = corners
+        self.radius = radius
+    }
+
+    public func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect,
+                                byRoundingCorners: corners,
+                                cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
 }
 
 #endif
