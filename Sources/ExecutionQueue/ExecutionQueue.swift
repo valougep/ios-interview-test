@@ -22,7 +22,18 @@ public protocol ExecutionQueue: AnyObject {
   )
 }
 
-public func makeDefaultExecutionQueue(
-) -> some ExecutionQueue {
-  // FIXME: Implement me
+class AsyncQueue: ExecutionQueue {
+    func schedule(priority: TaskPriority?, task: @escaping () async -> Void) {
+        Task {
+           await withTaskGroup(of: Void.self) { group in
+                group.addTaskUnlessCancelled(priority: priority) {
+                    await task()
+                }
+            }
+        }
+    }
+}
+
+public func makeDefaultExecutionQueue() -> some ExecutionQueue {
+  return AsyncQueue()
 }
