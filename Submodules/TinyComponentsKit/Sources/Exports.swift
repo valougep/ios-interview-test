@@ -9,4 +9,6 @@
 // MARK: - Components
 
 @_exported import GrowingVStack
+@_exported import PressReleaseButton
+@_exported import RoundedButton
 @_exported import TenTenSwiftUI
