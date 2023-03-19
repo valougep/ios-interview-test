@@ -18,18 +18,32 @@ import SwiftUI
 @frozen
 public struct PressReleaseButton<Label: View>: View {
   public typealias ActionCallback = () -> Void
+    @usableFromInline
+    let onPress: ActionCallback
+    @usableFromInline
+    let onRelease: ActionCallback
+    @usableFromInline
+    var isPressed: Binding<Bool>
+    @usableFromInline
+    @ViewBuilder let label: () -> Label
 
   @inlinable
   public init(
     onPress: @escaping ActionCallback,
     onRelease: @escaping ActionCallback,
     isPressed: Binding<Bool>,
-    @ViewBuilder label: () -> Label
+    @ViewBuilder label: @escaping () -> Label
   ) {
-    // FIXME: Implement me
+      self.onPress = onPress
+      self.onRelease = onRelease
+      self.isPressed = isPressed
+      self.label = label
   }
 
   public var body: some View {
-    // FIXME: Implement me
+      return Button(action: {
+          isPressed.wrappedValue ? onPress() : onRelease()
+      }, label: label)
+          .buttonStyle(PressReleaseButtonStyle(onPress: onPress, isPressed: isPressed))
   }
 }

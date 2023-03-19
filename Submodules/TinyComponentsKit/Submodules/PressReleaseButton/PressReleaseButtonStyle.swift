@@ -13,11 +13,32 @@ import SwiftUI
 
 @frozen
 public struct PressReleaseButtonStyle: PrimitiveButtonStyle {
+    @usableFromInline
+    let onPress: () -> Void
+    @usableFromInline
+    var isPressed: Binding<Bool>
+
   @inlinable
   public init(
     onPress: @escaping () -> Void,
     isPressed: Binding<Bool>
   ) {
-    // FIXME: Implement me
+      self.onPress = onPress
+      self.isPressed = isPressed
   }
+
+    public func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        isPressed.wrappedValue = true
+                        configuration.trigger()
+                    }
+                    .onEnded { _ in
+                        isPressed.wrappedValue = false
+                        configuration.trigger()
+                    }
+            )
+    }
 }
