@@ -24,16 +24,38 @@ import SwiftUI
 
 @frozen
 public struct ConnectionIndicator: View {
-  @Binding private var state: ConnectionIndicatorState
+    @Binding private var state: ConnectionIndicatorState
+    @State private var trimAmount: CGFloat = 1
+    @State private var shouldTrim: Bool = false
+    
+    public init(
+        state: Binding<ConnectionIndicatorState>
+    ) {
+        self._state = state
+    }
+    
+    private let gradient = AngularGradient(colors: [.yellow, .orange, .red, .orange], center: .center, startAngle: .degrees(0), endAngle: .degrees(360))
 
-  public init(
-    state: Binding<ConnectionIndicatorState>
-  ) {
-    self._state = state
-  }
+    public var body: some View {
+        Button(action: {
+            print("Round Action")
+        }) {
+            Color.clear
+                .frame(width: 117, height: 117)
+                .background(state == .connecting ? Color.black.opacity(0.5) : Color.gray)
+                .clipShape(Circle()).padding(9)
+                .overlay(
+                    Circle()
+                        .trim(from: 0 , to: shouldTrim ? 1 : 0)
+                        .stroke(gradient, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                        .rotationEffect(.degrees(shouldTrim ? 0 : -90))
+                )
+        }
 
-  public var body: some View {
-    // FIXME: Implement me
-    EmptyView()
-  }
+        .onAppear {
+            withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                shouldTrim.toggle()
+            }
+        }
+    }
 }
