@@ -16,18 +16,43 @@ import SwiftUI
 
 @frozen
 public struct GrowingVStack<Content: View>: View {
-  @usableFromInline
-  let content: Content
+    @usableFromInline
+    let content: Content
 
-  @inlinable
-  public init(
-    @ViewBuilder content: () -> Content
-  ) {
-    self.content = content()
-  }
+    @usableFromInline
+    let scaling: CGFloat = 0.15
 
-  @inlinable
-  public var body: some View {
-    EmptyView()
-  }
+    @inlinable
+    public init(
+        @ViewBuilder content: () -> Content
+    ) {
+        self.content = content()
+    }
+
+    @inlinable
+    public var body: some View {
+        VStack {
+            _VariadicView.Tree(ScalingLayout(scaling: scaling)) {
+                content
+            }
+        }
+    }
+}
+
+@frozen
+public struct ScalingLayout: _VariadicView_UnaryViewRoot {
+    @usableFromInline
+    let scaling: CGFloat
+
+    @inlinable
+    public init(scaling: CGFloat) {
+        self.scaling = scaling
+    }
+
+    @ViewBuilder
+    public func body(children: _VariadicView.Children) -> some View {
+        ForEach(Array(children.enumerated()), id: \.offset) { (offset, element) in
+            element.scaleEffect(1.00 + (scaling * CGFloat(offset)))
+        }
+    }
 }
